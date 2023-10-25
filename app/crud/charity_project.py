@@ -31,18 +31,18 @@ class CRUDCharityProject(CRUDBase):
         session: AsyncSession
     ):
         """Обновление объекта"""
-        db_obj = await validate_update_data(
+        await validate_update_data(
             project, obj_in, session
         )
-        obj_data = jsonable_encoder(db_obj)
+        obj_data = jsonable_encoder(project)
         update_data = obj_in.dict(exclude_unset=True)
         for field in obj_data:
             if field in update_data:
-                setattr(db_obj, field, update_data[field])
-        session.add(db_obj)
+                setattr(project, field, update_data[field])
+        session.add(project)
         await session.commit()
-        await session.refresh(db_obj)
-        return db_obj
+        await session.refresh(project)
+        return project
 
 
 charityproject_crud = CRUDCharityProject(CharityProject)

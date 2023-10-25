@@ -2,8 +2,8 @@ from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from aiogoogle import Aiogoogle
-from app.core.config import settings
 
+from app.core.config import settings
 from app.services.services import get_list_closed_objects
 from app.models.charity_project import CharityProject
 from app.crud.constants import (

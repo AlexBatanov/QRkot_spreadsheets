@@ -48,7 +48,7 @@ class CRUDBase:
             session: AsyncSession,
     ):
         """Удаление объекта"""
-        db_obj = await validate_delete_obj(db_obj)
+        await validate_delete_obj(db_obj)
         await session.delete(db_obj)
         await session.commit()
         return db_obj

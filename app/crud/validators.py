@@ -8,7 +8,6 @@ from app.schemas.charity_project import CharityProjectUpdate
 from app.crud.constants import (
     MIN_AMOUNT,
     NAME_NOT_UNIQUE,
-    PROJECT_NOT_FOUND,
     AMOUNT_LESS_THAN_INVETED,
     CLOSED_PROJECT_DONT_REDACTED,
     INVESTED_PROJECT_DONT_DELETE
@@ -29,23 +28,6 @@ async def check_name_duplicate(
             status_code=HTTPStatus.BAD_REQUEST,
             detail=NAME_NOT_UNIQUE,
         )
-
-
-async def check_charity_project_exists(
-        charity_project_id: int,
-        session: AsyncSession,
-) -> CharityProject:
-    """Проверка на существование объекта"""
-    from app.crud.charity_project import charityproject_crud
-    charity_project = await charityproject_crud.get_obj(
-        charity_project_id, session
-    )
-    if charity_project is None:
-        raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND,
-            detail=PROJECT_NOT_FOUND
-        )
-    return charity_project
 
 
 def check_charity_project_closed(
@@ -90,13 +72,12 @@ async def validate_update_data(
     charity_project: CharityProject,
     obj_in: CharityProjectUpdate,
     session: AsyncSession
-) -> CharityProject:
+) -> None:
     """Проверка обновленных данных для фонда"""
     check_charity_project_closed(charity_project, CLOSED_PROJECT_DONT_REDACTED)
     if obj_in.name is not None:
         await check_name_duplicate(obj_in.name, session)
     chek_new_full_amount(obj_in, charity_project)
-    return charity_project
 
 
 async def validate_delete_obj(project: CharityProject) -> CharityProject:
@@ -105,4 +86,3 @@ async def validate_delete_obj(project: CharityProject) -> CharityProject:
     check_charity_project_invested_amount(
         project, INVESTED_PROJECT_DONT_DELETE
     )
-    return project
